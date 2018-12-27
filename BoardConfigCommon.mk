@@ -28,6 +28,9 @@ TARGET_SPECIFIC_HEADER_PATH := $(PLATFORM_PATH)/include
 
 BOARD_VENDOR := motorola
 
+# Ignore for now
+SELINUX_IGNORE_NEVERALLOWS := true
+
 # Platform
 TARGET_ARCH := arm64
 TARGET_ARCH_VARIANT := armv8-a
