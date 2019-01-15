@@ -1,0 +1,26 @@
+[
+  {
+    "remote":      "github",
+    "repository":  "SyberHexen/X-Payton_kernel",
+    "target_path": "kernel/motorola/sdm660",
+    "branch":      "x-payton"
+  },
+  {
+    "remote":      "github",
+    "repository":  "android_packages_resources_devicesettings",
+    "target_path": "packages/resources/devicesettings",
+    "branch":      "lineage-16.0"
+  },
+  {
+    "remote":      "github",
+    "repository":  "LineageOS/android_external_bson",
+    "target_path": "external/bson",
+    "branch":      "lineage-16.0"
+  },
+  {
+    "remote":      "github",
+    "repository":  "LineageOS/android_system_qcom",
+    "target_path": "system/qcom",
+    "branch":      "lineage-16.0"
+  }
+]
