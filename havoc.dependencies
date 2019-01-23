@@ -3,7 +3,7 @@
     "remote":      "github",
     "repository":  "SyberHexen/kernel_motorola_msm8998",
     "target_path": "kernel/motorola/msm8998",
-    "branch":      "staging/9.x"
+    "branch":      "pie"
   },
   {
     "remote":      "github",
