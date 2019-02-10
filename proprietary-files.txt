@@ -141,6 +141,9 @@ framework/vendor.qti.latency-V2.0-java.jar
 vendor/lib64/vendor.qti.latency@2.0.so
 vendor/lib/vendor.qti.latency@2.0.so
 
+# ctbk
+etc/motorola/mdmctbk/ctbk_val.cfg
+
 # DRM - HDCP
 vendor/lib/libmm-hdcpmgr.so
 vendor/lib64/libmm-hdcpmgr.so
