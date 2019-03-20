@@ -381,4 +381,13 @@
          provisioning, availability etc -->
     <bool name="config_carrier_vt_available">true</bool>
 
+    <!-- Whether the device supports Smart Pixels -->
+    <bool name="config_enableSmartPixels">true</bool>
+
+    <!-- Does the device supports fast charging -->
+    <bool name="config_FastChargingLedSupported">true</bool>
+
+    <!-- Default value for led color when fast charging is active -->
+    <integer name="config_notificationsFastBatteryARGB">0xFF0000FF</integer>
+
 </resources>
