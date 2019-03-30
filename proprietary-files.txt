@@ -52,6 +52,14 @@ vendor/lib/hw/com.qualcomm.qti.bluetooth_audio@1.0-impl.so
 vendor/lib/com.qualcomm.qti.ant@1.0.so
 vendor/lib/com.qualcomm.qti.bluetooth_audio@1.0.so
 
+# Carrier apps
+-priv-app/DMService/DMService.apk
+-priv-app/SprintDM/SprintDM.apk
+lib/libdmengine.so
+lib/libdmjava.so
+etc/permissions/com.android.omadm.service.xml
+etc/sysconfig/whitelist_com.android.omadm.service.xml
+
 # CNE
 etc/permissions/cneapiclient.xml
 etc/permissions/com.quicinc.cne.xml
