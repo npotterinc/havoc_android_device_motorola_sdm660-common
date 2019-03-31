@@ -52,11 +52,18 @@ vendor/lib/hw/com.qualcomm.qti.bluetooth_audio@1.0-impl.so
 vendor/lib/com.qualcomm.qti.ant@1.0.so
 vendor/lib/com.qualcomm.qti.bluetooth_audio@1.0.so
 
-# Carrier apps
+# Carrier Apps
 -priv-app/DMService/DMService.apk
 -priv-app/SprintDM/SprintDM.apk
+
+# Carrier Libs
 lib/libdmengine.so
 lib/libdmjava.so
+lib/vendor.qti.hardware.radio.qcrilhook@1.0.so
+lib64/vendor.qti.hardware.radio.qcrilhook@1.0.so
+
+# Carrier Permissions
+etc/permissions/LteDirectDiscovery.xml
 etc/permissions/com.android.omadm.service.xml
 etc/sysconfig/whitelist_com.android.omadm.service.xml
 
@@ -507,6 +514,8 @@ framework/qcrilhook.jar:vendor/framework/qcrilhook.jar
 framework/qti-telephony-common.jar|b1953a3599255f08f1785c677d22810f65e0167b
 framework/QtiTelephonyServicelibrary.jar:vendor/framework/QtiTelephonyServicelibrary.jar
 -priv-app/qcrilmsgtunnel/qcrilmsgtunnel.apk
+lib/vendor.qti.hardware.radio.qcrilhook@1.0.so
+lib64/vendor.qti.hardware.radio.qcrilhook@1.0.so
 vendor/bin/ATFWD-daemon
 vendor/bin/ipacm-diag
 vendor/bin/netmgrd
@@ -523,6 +532,7 @@ vendor/lib/libmdmdetect.so
 vendor/lib/libpdmapper.so
 vendor/lib/libpdnotifier.so
 -vendor/lib/libqmiservices.so
+vendor/lib/libril-qc-ltedirectdisc.so
 vendor/lib/vendor.qti.hardware.radio.am@1.0.so
 vendor/lib/vendor.qti.hardware.radio.atcmdfwd@1.0.so
 vendor/lib/vendor.qti.hardware.radio.ims@1.0.so
