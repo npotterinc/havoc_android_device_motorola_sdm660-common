@@ -116,6 +116,10 @@ PRODUCT_PACKAGES += \
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.crypto.volume.filenames_mode=aes-256-cts
 
+# Fix Double Encryption (placeholder for when kernel can support this)
+#PRODUCT_PROPERTY_OVERRIDES += \
+#    ro.crypto.allow_encrypt_override=true
+
 # Fingerprint
 PRODUCT_PACKAGES += \
     android.hardware.biometrics.fingerprint@2.1
