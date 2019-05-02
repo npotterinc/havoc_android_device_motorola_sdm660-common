@@ -53,6 +53,9 @@ ENABLE_CPUSETS := true
 ENABLE_SCHEDBOOST := true
 TARGET_USES_64_BIT_BINDER := true
 
+# Use Snapdragon LLVM, if available	
+TARGET_USE_SDCLANG := true
+
 # Audio
 BOARD_USES_ALSA_AUDIO := true
 BOARD_SUPPORTS_SOUND_TRIGGER_HAL := true
