@@ -77,6 +77,11 @@ PRODUCT_PROPERTY_OVERRIDES += \
     ro.opengles.version=196610 \
     ro.qualcomm.cabl=0
 
+# Dirty ratios
+PRODUCT_PROPERTY_OVERRIDES += \
+	vm.dirty_ratio=5 \
+	vm.dirty_background_ratio=1
+
 # FM
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.fm.transmitter=false \
