@@ -17,12 +17,13 @@
 
 package org.lineageos.settings.device;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.UserHandle;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 
-import com.android.internal.hardware.AmbientDisplayConfiguration;
+import android.util.Log;
 
 import org.lineageos.settings.device.actions.UpdatedStateNotifier;
 import org.lineageos.settings.device.actions.CameraActivationAction;
@@ -66,28 +67,20 @@ public class LineageActionsSettings {
         return mChopChopEnabled;
     }
 
-    public static boolean isAODEnabled(Context context) {
-        return new AmbientDisplayConfiguration(context).alwaysOnEnabled(UserHandle.USER_CURRENT);
-    }
-
-    public static boolean isDozeEnabled(Context context) {
-        return new AmbientDisplayConfiguration(context).pulseOnNotificationEnabled(UserHandle.USER_CURRENT);
-    }
-
-    public boolean isAODEnabled() {
-        return isAODEnabled(mContext);
+    public static boolean isDozeEnabled(ContentResolver contentResolver) {
+        return (Settings.Secure.getInt(contentResolver, Settings.Secure.DOZE_ENABLED, 1) != 0);
     }
 
     public boolean isDozeEnabled() {
-        return isDozeEnabled(mContext);
+        return isDozeEnabled(mContext.getContentResolver());
     }
 
     public boolean isIrWakeupEnabled() {
-        return isDozeEnabled() && !isAODEnabled() && mIrWakeUpEnabled;
+        return isDozeEnabled() && mIrWakeUpEnabled;
     }
 
     public boolean isPickUpEnabled() {
-        return isDozeEnabled() && !isAODEnabled() && mPickUpGestureEnabled;
+        return isDozeEnabled() && mPickUpGestureEnabled;
     }
 
     public boolean isIrSilencerEnabled() {
