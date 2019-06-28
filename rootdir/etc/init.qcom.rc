@@ -95,10 +95,9 @@ on fs
 on late-fs
     # Start services for bootanim
     start servicemanager
+    start vendor.configstore-hal
     start surfaceflinger
     start bootanim
-
-    start vendor.configstore-hal
     start vendor.gralloc-2-0
 
     # Mount RW partitions which need run fsck
@@ -1499,6 +1498,15 @@ on property:init.svc.vendor.hwcomposer-2-1=running
     start vendor.ppd
 
 on property:init.svc.vendor.hwcomposer-2-1=restarting
+    stop vendor.ppd
+
+on property:init.svc.zygote=stopped
+    stop vendor.ppd
+
+on property:init.svc.zygote=running
+    start vendor.ppd
+
+on property:init.svc.zygote=restarting
     stop vendor.ppd
 
 service vendor.energy-awareness /vendor/bin/energy-awareness
