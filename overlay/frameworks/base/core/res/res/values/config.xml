@@ -433,6 +433,13 @@
          in hardware. -->
     <bool name="config_setColorTransformAccelerated">true</bool>
 
+	<!-- If true, the screen can be rotated via the accelerometer in all 4
+		 rotations as the default behavior. -->
+	<bool name="config_allowAllRotations">true</bool>
+
+	<!-- Enable lockscreen rotation by default -->
+    <bool name="config_enableLockScreenRotation">true</bool>
+
 	<!-- Enable overlay for all location components. -->
 	<string name="config_networkLocationProviderPackageName" translatable="false">com.qualcomm.location</string>
 	<string name="config_fusedLocationProviderPackageName" translatable="false">com.qualcomm.location</string>
