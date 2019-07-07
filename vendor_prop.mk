@@ -102,7 +102,9 @@ PRODUCT_PROPERTY_OVERRIDES += \
 
 # Moto_FI
 PRODUCT_PROPERTY_OVERRIDES += \
-    ro.mot.product_wave=2017.3
+    ro.mot.product_wave=2017.3 \
+    persist.radio.fi_supported=1 \
+    persist.vendor.radio.fi_supported=1
 
 # OEM Unlock reporting
 PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
