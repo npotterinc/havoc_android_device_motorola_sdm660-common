@@ -102,7 +102,6 @@ PRODUCT_PROPERTY_OVERRIDES += \
 
 # Moto_FI
 PRODUCT_PROPERTY_OVERRIDES += \
-    ro.mot.product_wave=2017.3 \
     persist.radio.fi_supported=1 \
     persist.vendor.radio.fi_supported=1
 
@@ -111,11 +110,11 @@ PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
 	ro.oem_unlock_supported=1
 
 # Play store
-#PRODUCT_PROPERTY_OVERRIDES += \
-#    ro.com.google.clientidbase.am=android-motorola \
-#    ro.com.google.clientidbase.gmm=android-motorola \
-#    ro.com.google.clientidbase.ms=android-motorola \
-#    ro.com.google.clientidbase.yt=android-motorola
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.com.google.clientidbase.am=android-motorola \
+    ro.com.google.clientidbase.gmm=android-motorola \
+    ro.com.google.clientidbase.ms=android-motorola \
+    ro.com.google.clientidbase.yt=android-motorola
 
 # Radio
 PRODUCT_PROPERTY_OVERRIDES += \
