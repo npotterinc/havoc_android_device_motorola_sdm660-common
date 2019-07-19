@@ -56,7 +56,7 @@ vendor/lib/com.qualcomm.qti.bluetooth_audio@1.0.so
 -priv-app/DMService/DMService.apk
 -priv-app/SprintDM/SprintDM.apk
 lib/libdmengine.so
-lib/libdmjava.so
+lib/libdmjavaplugin.so
 etc/permissions/com.android.omadm.service.xml
 etc/sysconfig/whitelist_com.android.omadm.service.xml
 
