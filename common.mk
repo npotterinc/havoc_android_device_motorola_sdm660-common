@@ -361,7 +361,8 @@ PRODUCT_PACKAGES += brillo_update_payload
 
 # USB
 PRODUCT_PACKAGES += \
-    android.hardware.usb@1.0-service
+    android.hardware.usb@1.0-service \
+    com.android.future.usb.accessory
 
 # VR feature
 PRODUCT_COPY_FILES += \
