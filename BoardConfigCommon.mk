@@ -22,6 +22,8 @@
 # definition file).
 #
 
+SELINUX_IGNORE_NEVERALLOWS := true
+
 PLATFORM_PATH := device/motorola/sdm660-common
 
 TARGET_SPECIFIC_HEADER_PATH := $(PLATFORM_PATH)/include
