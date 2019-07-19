@@ -1,1 +1,4 @@
 sys.post_boot.           u:object_r:post_boot_prop:s0
+
+# MPCTL
+sys.post_boot.parsed                                          u:object_r:vendor_mpctl_prop:s0
