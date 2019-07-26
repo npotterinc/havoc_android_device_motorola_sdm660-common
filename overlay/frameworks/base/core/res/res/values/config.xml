@@ -437,9 +437,6 @@
          in hardware. -->
     <bool name="config_setColorTransformAccelerated">true</bool>
 
-	<!-- Whether device supports double tap to wake -->
-	<bool name="config_supportDoubleTapWake">false</bool>
-
 	<!-- If true, the screen can be rotated via the accelerometer in all 4
 		 rotations as the default behavior. -->
 	<bool name="config_allowAllRotations">true</bool>
@@ -473,40 +470,5 @@
 
     <!-- Enable 802.11ac for Wifi hotspot (SAP) -->
     <bool translatable="false" name="config_wifi_softap_ieee80211ac_supported">true</bool>
-
-    <!-- Whether the device has outdated qti-telephony-common.jar -->
-    <bool name="config_oldQtiTelephony">false</bool>
-
-    <!-- Flag specifying whether VT should be available for carrier: independent of
-         carrier provisioning. If false: hard disabled. If true: then depends on carrier
-         provisioning, availability etc -->
-    <bool name="config_carrier_vt_available">true</bool>
-
-    <!-- Whether the device supports Smart Pixels -->
-    <bool name="config_enableSmartPixels">true</bool>
-
-    <!-- Does the device supports fast charging -->
-    <bool name="config_FastChargingLedSupported">true</bool>
-
-    <!-- Default value for led color when fast charging is active -->
-    <integer name="config_notificationsFastBatteryARGB">0xFF0000FF</integer>
-
-    <!-- Whether device needs to wait for Qualcomm MPCTL service to start
-         before setting power profiles on boot. -->
-    <bool name="config_waitForMpctlOnBoot">true</bool>
-
-    <!-- Whether or not we should show vendor mismatch message -->
-    <bool name="config_show_vendor_mismatch_message">false</bool>
-
-    <!-- Whether to enable Qualcomm Boost Framework -->
-    <bool name="config_enableQcCpuBoost">true</bool>
-
-    <!-- Whether device supports an alt. ambient display --> 
-    <bool name="config_alt_ambient_display">false</bool>
-
-    <!-- Smart charge sysfs node and value for suspend/resume charging-->
-    <string name="config_SmartChargingSysfsNode" translatable="false">/sys/class/power_supply/battery/battery_charging_enabled</string>
-    <string name="config_SmartChargingSupspendValue" translatable="false">0</string>
-    <string name="config_SmartChargingResumeValue" translatable="false">1</string>
 
 </resources>
