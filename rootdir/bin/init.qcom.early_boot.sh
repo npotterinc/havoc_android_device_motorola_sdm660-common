@@ -293,8 +293,10 @@ case "$target" in
             *)
                 if [ $fb_width -le 1600 ]; then
                     setprop vendor.display.lcd_density 560
+                    setprop dalvik.vm.heapgrowthlimit 256m
                 else
                     setprop vendor.display.lcd_density 640
+                    setprop dalvik.vm.heapgrowthlimit 512m
                 fi
                 ;;
         esac
@@ -304,8 +306,10 @@ case "$target" in
             *)
                 if [ $fb_width -le 1600 ]; then
                     setprop vendor.display.lcd_density 560
+                    setprop dalvik.vm.heapgrowthlimit 256m
                 else
                     setprop vendor.display.lcd_density 640
+                    setprop dalvik.vm.heapgrowthlimit 512m
                 fi
                 ;;
         esac

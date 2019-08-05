@@ -2473,34 +2473,6 @@ case "$target" in
             # re-enable thermal and BCL hotplug
             echo 1 > /sys/module/msm_thermal/core_control/enabled
 
-            # add by yangbq2, enable process_reclaime and set oom_reaper to 1
-            # Read adj series and set adj threshold for PPR and ALMK.
-            # This is required since adj values change from framework to framework.
-            adj_series=`cat /sys/module/lowmemorykiller/parameters/adj`
-            adj_1="${adj_series#*,}"
-            set_almk_ppr_adj="${adj_1%%,*}"
-
-            # PPR and ALMK should not act on HOME adj and below.
-            # Normalized ADJ for HOME is 6. Hence multiply by 6
-            # ADJ score represented as INT in LMK params, actual score can be in decimal
-            # Hence add 6 considering a worst case of 0.9 conversion to INT (0.9*6).
-            # For uLMK + Memcg, this will be set as 6 since adj is zero.
-            set_almk_ppr_adj=$(((set_almk_ppr_adj * 6) + 6))
-            echo $set_almk_ppr_adj > /sys/module/lowmemorykiller/parameters/adj_max_shift
-
-            if [ -f /sys/module/lowmemorykiller/parameters/oom_reaper ]; then
-                echo 1 > /sys/module/lowmemorykiller/parameters/oom_reaper
-            fi
-
-            #Set PPR parameters for all other targets.
-            echo $set_almk_ppr_adj > /sys/module/process_reclaim/parameters/min_score_adj
-            echo 1 > /sys/module/process_reclaim/parameters/enable_process_reclaim
-            echo 50 > /sys/module/process_reclaim/parameters/pressure_min
-            echo 70 > /sys/module/process_reclaim/parameters/pressure_max
-            echo 30 > /sys/module/process_reclaim/parameters/swap_opt_eff
-            echo 512 > /sys/module/process_reclaim/parameters/per_swap_size
-            # end, yangbq2
-
             # Set Memory parameters
             configure_memory_parameters
 
@@ -3121,9 +3093,9 @@ case "$target" in
                 # Turn off scheduler boost at the end
                 echo 0 > /proc/sys/kernel/sched_boost
 
-                # Turn on sleep modes.
-                echo 0 > /sys/module/lpm_levels/parameters/sleep_disabled
-          ;;
+            # Turn on sleep modes.
+            echo 0 > /sys/module/lpm_levels/parameters/sleep_disabled
+            ;;
         esac
     ;;
 esac
@@ -3825,10 +3797,10 @@ case "$target" in
 	# tasks eligible to run on previous cluster minus number of CPUs in
 	# the previous cluster).
 	#
-	# Setting to 1 by default which means there should be at least
-	# 4 tasks eligible to run on gold cluster (tasks running on gold cores
+	# Setting to 3 by default which means there should be at least
+	# 6 tasks eligible to run on gold cluster (tasks running on gold cores
 	# plus misfit tasks on silver cores) to trigger assitance from gold+.
-	echo 1 > /sys/devices/system/cpu/cpu7/core_ctl/nr_prev_assist_thresh
+	echo 3 > /sys/devices/system/cpu/cpu7/core_ctl/nr_prev_assist_thresh
 
 	# Disable Core control on silver
 	echo 0 > /sys/devices/system/cpu/cpu0/core_ctl/enable
@@ -3850,20 +3822,20 @@ case "$target" in
 	# configure governor settings for silver cluster
 	echo "schedutil" > /sys/devices/system/cpu/cpufreq/policy0/scaling_governor
 	echo 0 > /sys/devices/system/cpu/cpufreq/policy0/schedutil/rate_limit_us
-	echo 1209600 > /sys/devices/system/cpu/cpufreq/policy0/schedutil/hispeed_freq
+	echo 1075200 > /sys/devices/system/cpu/cpufreq/policy0/schedutil/hispeed_freq
 	echo 576000 > /sys/devices/system/cpu/cpufreq/policy0/scaling_min_freq
 	echo 1 > /sys/devices/system/cpu/cpufreq/policy0/schedutil/pl
 
 	# configure governor settings for gold cluster
 	echo "schedutil" > /sys/devices/system/cpu/cpufreq/policy4/scaling_governor
 	echo 0 > /sys/devices/system/cpu/cpufreq/policy4/schedutil/rate_limit_us
-	echo 1612800 > /sys/devices/system/cpu/cpufreq/policy4/schedutil/hispeed_freq
+	echo 1248000 > /sys/devices/system/cpu/cpufreq/policy4/schedutil/hispeed_freq
 	echo 1 > /sys/devices/system/cpu/cpufreq/policy4/schedutil/pl
 
 	# configure governor settings for gold+ cluster
 	echo "schedutil" > /sys/devices/system/cpu/cpufreq/policy7/scaling_governor
 	echo 0 > /sys/devices/system/cpu/cpufreq/policy7/schedutil/rate_limit_us
-	echo 1612800 > /sys/devices/system/cpu/cpufreq/policy7/schedutil/hispeed_freq
+	echo 1286400 > /sys/devices/system/cpu/cpufreq/policy7/schedutil/hispeed_freq
 	echo 1 > /sys/devices/system/cpu/cpufreq/policy7/schedutil/pl
 
 	# configure input boost settings
@@ -3889,7 +3861,7 @@ case "$target" in
 	    do
 		echo "bw_hwmon" > $cpubw/governor
 		echo 40 > $cpubw/polling_interval
-		echo "2288 4577 7110 9155 12298 14236 15258" > $cpubw/bw_hwmon/mbps_zones
+		echo "2288 3051 6149 8132 10162 11856" > $cpubw/bw_hwmon/mbps_zones
 		echo 4 > $cpubw/bw_hwmon/sample_ms
 		echo 50 > $cpubw/bw_hwmon/io_percent
 		echo 20 > $cpubw/bw_hwmon/hist_memory
@@ -3898,14 +3870,13 @@ case "$target" in
 		echo 0 > $cpubw/bw_hwmon/guard_band_mbps
 		echo 250 > $cpubw/bw_hwmon/up_scale
 		echo 1600 > $cpubw/bw_hwmon/idle_mbps
-		echo 14236 > $cpubw/max_freq
 	    done
 
 	    for llccbw in $device/*cpu-llcc-ddr-bw/devfreq/*cpu-llcc-ddr-bw
 	    do
 		echo "bw_hwmon" > $llccbw/governor
 		echo 40 > $llccbw/polling_interval
-		echo "1720 2929 3879 5931 6881 7980" > $llccbw/bw_hwmon/mbps_zones
+		echo "1720 2929 4943 5931 6881 7980" > $llccbw/bw_hwmon/mbps_zones
 		echo 4 > $llccbw/bw_hwmon/sample_ms
 		echo 80 > $llccbw/bw_hwmon/io_percent
 		echo 20 > $llccbw/bw_hwmon/hist_memory
@@ -3914,7 +3885,6 @@ case "$target" in
 		echo 0 > $llccbw/bw_hwmon/guard_band_mbps
 		echo 250 > $llccbw/bw_hwmon/up_scale
 		echo 1600 > $llccbw/bw_hwmon/idle_mbps
-		echo 6881 > $llccbw/max_freq
 	    done
 
 	    for npubw in $device/*npu-npu-ddr-bw/devfreq/*npu-npu-ddr-bw
@@ -3922,15 +3892,15 @@ case "$target" in
 		echo 1 > /sys/devices/virtual/npu/msm_npu/pwr
 		echo "bw_hwmon" > $npubw/governor
 		echo 40 > $npubw/polling_interval
-		echo "1720 2929 3879 5931 6881 7980" > $npubw/bw_hwmon/mbps_zones
+		echo "1720 2929 4943 5931 6881 7980" > $npubw/bw_hwmon/mbps_zones
 		echo 4 > $npubw/bw_hwmon/sample_ms
 		echo 80 > $npubw/bw_hwmon/io_percent
 		echo 20 > $npubw/bw_hwmon/hist_memory
-		echo 6  > $npubw/bw_hwmon/hyst_length
+		echo 10 > $npubw/bw_hwmon/hyst_length
 		echo 30 > $npubw/bw_hwmon/down_thres
 		echo 0 > $npubw/bw_hwmon/guard_band_mbps
 		echo 250 > $npubw/bw_hwmon/up_scale
-		echo 0 > $npubw/bw_hwmon/idle_mbps
+		echo 1600 > $npubw/bw_hwmon/idle_mbps
 		echo 0 > /sys/devices/virtual/npu/msm_npu/pwr
 	    done
 
@@ -4325,7 +4295,7 @@ case "$target" in
         start mpdecision
         echo 512 > /sys/block/mmcblk0/bdi/read_ahead_kb
     ;;
-    "msm8994" | "msm8992" | "msm8996" | "msm8998" | "sdm660" | "apq8098_latv" | "sdm845" | "sdm710" | "msmnile" | "sm6150")
+    "msm8994" | "msm8992" | "msm8996" | "msm8998" | "sdm660" | "apq8098_latv" | "sdm845" | "sdm710" | "msmnile" | "msmsteppe")
         setprop vendor.post_boot.parsed 1
     ;;
     "apq8084")
@@ -4417,6 +4387,18 @@ if [ -f /sys/devices/soc0/select_image ]; then
     echo $image_variant > /sys/devices/soc0/image_variant
     echo $oem_version > /sys/devices/soc0/image_crm_version
 fi
+
+# Change console log level as per console config property
+console_config=`getprop persist.console.silent.config`
+case "$console_config" in
+    "1")
+        echo "Enable console config to $console_config"
+        echo 0 > /proc/sys/kernel/printk
+        ;;
+    *)
+        echo "Enable console config to $console_config"
+        ;;
+esac
 
 # Parse misc partition path and set property
 misc_link=$(ls -l /dev/block/bootdevice/by-name/misc)
