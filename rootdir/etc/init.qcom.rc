@@ -345,9 +345,6 @@ on boot
     # load WIGIG platform driver
     insmod /vendor/lib/modules/msm_11ad_proxy.ko
 
-    # FPC button permissions
-    chown system system /sys/bus/spi/devices/spi8.0/key_enable
-
     # Change ownership and permission for AMPS factory testing
     chown root oem_5004 /sys/devices/soc/a800000.ssusb/modusb_enable
     chmod 0660 /sys/devices/soc/a800000.ssusb/modusb_enable
