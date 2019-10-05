@@ -77,6 +77,7 @@ int IPACM_Wan::num_ipv6_modem_pdn = 0;
 
 bool IPACM_Wan::embms_is_on = false;
 bool IPACM_Wan::backhaul_is_wan_bridge = false;
+bool IPACM_Wan::is_xlat = false;
 
 uint32_t IPACM_Wan::backhaul_ipv6_prefix[2];
 
@@ -132,7 +133,7 @@ IPACM_Wan::IPACM_Wan(int iface_index,
 	header_name_count = 0;
 	memset(invalid_mac, 0, sizeof(invalid_mac));
 
-	is_xlat = false;
+	is_xlat_local = false;
 	hdr_hdl_dummy_v6 = 0;
 	hdr_proc_hdl_dummy_v6 = 0;
 	is_default_gateway = false;
@@ -565,9 +566,9 @@ void IPACM_Wan::event_callback(ipa_cm_event_id event, void *param)
 			ipa_interface_index = IPACM_Iface::iface_ipa_index_query(data->if_index);
 			if ((ipa_interface_index == ipa_if_num) && (m_is_sta_mode == Q6_WAN))
 			{
-				is_xlat = true;
+				is_xlat_local = true;
 				IPACMDBG_H("WAN-LTE (%s) link up, iface: %d is_xlat: %d\n",
-						IPACM_Iface::ipacmcfg->iface_table[ipa_interface_index].iface_name,data->if_index, is_xlat);
+						IPACM_Iface::ipacmcfg->iface_table[ipa_interface_index].iface_name,data->if_index, is_xlat_local);
 			}
 			break;
 		}
@@ -767,9 +768,9 @@ void IPACM_Wan::event_callback(ipa_cm_event_id event, void *param)
 						}
 					}
 #ifdef FEATURE_IPA_ANDROID
-#ifdef FEATURE_IPACM_HAL
-					post_wan_up_tether_evt(data->iptype, 0);
-#else
+#ifndef FEATURE_IPACM_HAL
+					/* Fixed CR 2438491 for HAL-android platform trgets.
+					   Need to revisit for non-hal-android-platform targets if issue could be reproduced there as well */
 					/* using ipa_if_index, not netdev_index */
 					post_wan_up_tether_evt(data->iptype, iface_ipa_index_query(data->if_index_tether));
 #endif
@@ -802,15 +803,14 @@ void IPACM_Wan::event_callback(ipa_cm_event_id event, void *param)
 							handle_route_add_evt(data->iptype);
 						}
 					}
-#ifdef FEATURE_IPA_ANDROID
-#ifdef FEATURE_IPACM_HAL
-					post_wan_up_tether_evt(data->iptype, 0);
-#else
-					/* using ipa_if_index, not netdev_index */
-					post_wan_up_tether_evt(data->iptype, iface_ipa_index_query(data->if_index_tether));
-#endif
-#endif
 				}
+#ifdef FEATURE_IPA_ANDROID
+#ifndef FEATURE_IPACM_HAL
+				/* using ipa_if_index, not netdev_index */
+				post_wan_up_tether_evt(data->iptype, iface_ipa_index_query(data->if_index_tether));
+#endif
+#endif
+
 			}
 			else /* double check if current default iface is not itself */
 			{
@@ -963,7 +963,7 @@ void IPACM_Wan::event_callback(ipa_cm_event_id event, void *param)
 					handle_sta_header_add_evt();
 					handle_route_add_evt(data->iptype);
 					/* Add IPv6 routing table if XLAT is enabled */
-					if(is_xlat && (m_is_sta_mode == Q6_WAN) && (active_v6 == false))
+					if(is_xlat_local && (m_is_sta_mode == Q6_WAN) && (active_v6 == false))
 					{
 						IPACMDBG_H("XLAT enabled: adding IPv6 routing table dev (%s)\n", dev_name);
 						handle_route_add_evt(IPA_IP_v6);
@@ -1052,7 +1052,7 @@ void IPACM_Wan::event_callback(ipa_cm_event_id event, void *param)
 						install_wan_filtering_rule(false);
 						handle_route_del_evt_ex(IPA_IP_v4);
 
-						if(is_xlat && active_v6 == true)
+						if(is_xlat_local && active_v6 == true)
 						{
 							IPACMDBG_H("XLAT enabled: Delete IPv6 routing table dev (%s)\n", dev_name);
 							del_wan_firewall_rule(IPA_IP_v6);
@@ -1616,14 +1616,17 @@ int IPACM_Wan::handle_route_add_evt(ipa_ip_type iptype)
 				wanup_data->ifname, wanup_data->ipv4_addr, wanup_data->is_sta);
 		memset(&evt_data, 0, sizeof(evt_data));
 
+		/* set backhaul type as xlat */
+		IPACM_Wan::is_xlat = is_xlat_local;
+
 		/* send xlat configuration for installing uplink rules */
-		if(is_xlat && (m_is_sta_mode == Q6_WAN))
+		if(IPACM_Wan::is_xlat && (m_is_sta_mode == Q6_WAN))
 		{
 			IPACM_Wan::xlat_mux_id = ext_prop->ext[0].mux_id;
 			wanup_data->xlat_mux_id = IPACM_Wan::xlat_mux_id;
 			IPACMDBG_H("Set xlat configuraiton with below information:\n");
 			IPACMDBG_H("xlat_enabled: %d xlat_mux_id: %d \n",
-					is_xlat, xlat_mux_id);
+					IPACM_Wan::is_xlat, xlat_mux_id);
 		}
 		else
 		{
@@ -1638,6 +1641,10 @@ int IPACM_Wan::handle_route_add_evt(ipa_ip_type iptype)
 		evt_data.event = IPA_HANDLE_WAN_UP;
 		evt_data.evt_data = (void *)wanup_data;
 		IPACM_EvtDispatcher::PostEvt(&evt_data);
+
+#ifdef FEATURE_IPACM_HAL
+		post_wan_up_tether_evt(IPA_IP_v4, 0);
+#endif
 	}
 	else
 	{
@@ -1677,6 +1684,10 @@ int IPACM_Wan::handle_route_add_evt(ipa_ip_type iptype)
 		evt_data.event = IPA_HANDLE_WAN_UP_V6;
 		evt_data.evt_data = (void *)wanup_data;
 		IPACM_EvtDispatcher::PostEvt(&evt_data);
+
+#ifdef FEATURE_IPACM_HAL
+                post_wan_up_tether_evt(IPA_IP_v6, 0);
+#endif
 	}
 		if(IPACM_Iface::ipacmcfg->GetIPAVer() >= IPA_HW_None && IPACM_Iface::ipacmcfg->GetIPAVer() < IPA_HW_v4_0)
 		{
@@ -1740,9 +1751,14 @@ int IPACM_Wan::post_wan_up_tether_evt(ipa_ip_type iptype, int ipa_if_num_tether)
 	{
 		wanup_data->is_sta = false;
 	}
+	/* xlat mux-id*/
+	if(is_xlat && (m_is_sta_mode == Q6_WAN))
+		wanup_data->xlat_mux_id = ext_prop->ext[0].mux_id;
+	else
+		wanup_data->xlat_mux_id = 0;
 	IPACMDBG_H("Posting IPA_HANDLE_WAN_UP_TETHER with below information:\n");
-	IPACMDBG_H("tether_if_name:%s, is sta mode:%d\n",
-			IPACM_Iface::ipacmcfg->iface_table[ipa_if_num_tether].iface_name, wanup_data->is_sta);
+	IPACMDBG_H("tether_if_name:%s, is sta mode:%d xlat_mux_id: %d\n",
+			IPACM_Iface::ipacmcfg->iface_table[ipa_if_num_tether].iface_name, wanup_data->is_sta, wanup_data->xlat_mux_id);
 	memset(&evt_data, 0, sizeof(evt_data));
 
 	if (iptype == IPA_IP_v4)
@@ -3799,34 +3815,11 @@ int IPACM_Wan::add_dft_filtering_rule(struct ipa_flt_rule_add *rules, int rule_o
 
 		memcpy(&(rules[rule_offset + 2]), &flt_rule_entry, sizeof(struct ipa_flt_rule_add));
 
-		/* Add the fragment filtering rule. */
-		memset(&flt_rule_entry, 0, sizeof(struct ipa_flt_rule_add));
-
-		flt_rule_entry.at_rear = true;
-		flt_rule_entry.flt_rule_hdl = -1;
-		flt_rule_entry.status = -1;
-
-		flt_rule_entry.rule.retain_hdr = 1;
-		flt_rule_entry.rule.to_uc = 0;
-		flt_rule_entry.rule.eq_attrib_type = 1;
-		flt_rule_entry.rule.action = IPA_PASS_TO_ROUTING;
-#ifdef FEATURE_IPA_V3
-		flt_rule_entry.rule.hashable = true;
-#endif
-		flt_rule_entry.rule.rt_tbl_idx = rt_tbl_idx.idx;
-		flt_rule_entry.rule.eq_attrib.rule_eq_bitmap |= (1<<1);
-		flt_rule_entry.rule.eq_attrib.protocol_eq_present = 1;
-		flt_rule_entry.rule.eq_attrib.protocol_eq = IPACM_FIREWALL_IPPROTO_TCP;
-		flt_rule_entry.rule.attrib.u.v6.next_hdr = (uint8_t)IPACM_FIREWALL_IPPROTO_TCP;
-
 		/* Configuring fragment Filtering Rule */
-		memcpy(&flt_rule_entry.rule.attrib,
-					 &rx_prop->rx[0].attrib,
-					 sizeof(flt_rule_entry.rule.attrib));
-		/* remove meta data mask since we only install default flt rules once for all modem PDN*/
-		flt_rule_entry.rule.attrib.attrib_mask &= ~((uint32_t)IPA_FLT_META_DATA);
-
+		flt_rule_entry.rule.attrib.attrib_mask &= ~((uint32_t)IPA_FLT_DST_ADDR);
 		flt_rule_entry.rule.attrib.attrib_mask |= IPA_FLT_FRAGMENT;
+		flt_rule_entry.rule.attrib.attrib_mask |= IPA_FLT_NEXT_HDR;
+		flt_rule_entry.rule.attrib.u.v6.next_hdr = IPACM_FIREWALL_IPPROTO_TCP;
 
 		memset(&flt_eq, 0, sizeof(flt_eq));
 		memcpy(&flt_eq.attrib, &flt_rule_entry.rule.attrib, sizeof(flt_eq.attrib));

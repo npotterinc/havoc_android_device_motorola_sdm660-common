@@ -51,6 +51,7 @@ const char *IPACM_OffloadManager::DEVICE_NAME = "/dev/wwan_ioctl";
 
 /* NatApp class Implementation */
 IPACM_OffloadManager *IPACM_OffloadManager::pInstance = NULL;
+int IPACM_OffloadManager::num_offload_v4_tethered_iface = 0;
 
 IPACM_OffloadManager::IPACM_OffloadManager()
 {
@@ -234,11 +235,6 @@ RET IPACM_OffloadManager::addDownstream(const char * downstream_name, const Pref
 	{
 		IPACMDBG_H("addDownstream name(%s) currently not support in ipa \n", downstream_name);
 
-#ifdef FEATURE_IPACM_RESTART
-		/* add ipacm restart support */
-		push_iface_up(downstream_name, false);
-#endif
-
 		/* copy to the cache */
 		for(int i = 0; i < MAX_EVENT_CACHE ;i++)
 		{
@@ -278,8 +274,8 @@ RET IPACM_OffloadManager::addDownstream(const char * downstream_name, const Pref
 			if(i == MAX_EVENT_CACHE - 1)
 			{
 				IPACMDBG_H(" run out of event cache (%d)\n", i);
-		return FAIL_HARDWARE;
-	}
+				return FAIL_HARDWARE;
+			}
 		}
 
 		return SUCCESS;
@@ -571,6 +567,7 @@ RET IPACM_OffloadManager::stopAllOffload()
 	memset(event_cache, 0, MAX_EVENT_CACHE*sizeof(framework_event_cache));
 	latest_cache_index = 0;
 	valid_ifaces.clear();
+	IPACM_OffloadManager::num_offload_v4_tethered_iface = 0;
 	return result;
 }
 
@@ -892,7 +889,8 @@ bool IPACM_OffloadManager::push_framework_event(const char * if_name, _ipacm_off
 
 	for(int i = 0; i < MAX_EVENT_CACHE ;i++)
 	{
-		if(event_cache[latest_cache_index].valid == false)
+		if((latest_cache_index >= 0) && (latest_cache_index < MAX_EVENT_CACHE) &&
+			(event_cache[latest_cache_index].valid == false))
 		{
 			//do the copy
 			event_cache[latest_cache_index].valid = true;
