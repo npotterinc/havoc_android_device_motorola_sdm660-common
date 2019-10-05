@@ -89,6 +89,10 @@ PRODUCT_PROPERTY_OVERRIDES += \
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.vendor.extension_library=libqti-perfd-client.so
 
+# OEM Unlock reporting
+PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
+	ro.oem_unlock_supported=1
+
 # Play store
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.com.google.clientidbase.am=android-motorola \
