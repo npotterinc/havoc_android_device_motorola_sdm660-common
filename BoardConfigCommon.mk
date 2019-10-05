@@ -155,6 +155,9 @@ ifeq ($(HOST_OS),linux)
 endif
 PRODUCT_DEXPREOPT_SPEED_APPS += SystemUI
 
+# Fonts
+EXCLUDE_SERIF_FONTS := true
+
 # GPS
 TARGET_NO_RPC := true
 USE_DEVICE_SPECIFIC_GPS := true
