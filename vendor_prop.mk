@@ -89,6 +89,11 @@ PRODUCT_PROPERTY_OVERRIDES += \
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.vendor.extension_library=libqti-perfd-client.so
 
+# Moto_FI
+PRODUCT_PROPERTY_OVERRIDES += \
+    persist.radio.fi_supported=1 \
+    persist.vendor.radio.fi_supported=1
+
 # OEM Unlock reporting
 PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
 	ro.oem_unlock_supported=1
